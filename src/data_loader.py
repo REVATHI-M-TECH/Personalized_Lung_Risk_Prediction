@@ -10,7 +10,10 @@ def load_data(base_path, img_size=(160, 160), batch_size=16):
         rescale=1./255,
         rotation_range=10,
         zoom_range=0.1,
-        horizontal_flip=True
+        horizontal_flip=True,
+        width_shift_range=0.05,
+         height_shift_range=0.05
+
     )
 
     test_val_datagen = ImageDataGenerator(rescale=1./255)

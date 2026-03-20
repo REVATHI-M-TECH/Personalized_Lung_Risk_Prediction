@@ -1,0 +1,45 @@
+{
+  "Bacterial Pneumonia": {
+    "precision": 0.7275280898876404,
+    "recall": 0.6475,
+    "f1-score": 0.6851851851851852,
+    "support": 400.0
+  },
+  "Corona Virus Disease": {
+    "precision": 0.8431372549019608,
+    "recall": 0.9508599508599509,
+    "f1-score": 0.8937644341801386,
+    "support": 407.0
+  },
+  "Normal": {
+    "precision": 0.7218181818181818,
+    "recall": 0.9826732673267327,
+    "f1-score": 0.8322851153039832,
+    "support": 404.0
+  },
+  "Tuberculosis": {
+    "precision": 0.9969788519637462,
+    "recall": 0.8088235294117647,
+    "f1-score": 0.8930987821380244,
+    "support": 408.0
+  },
+  "Viral Pneumonia": {
+    "precision": 0.7085889570552147,
+    "recall": 0.5732009925558312,
+    "f1-score": 0.6337448559670782,
+    "support": 403.0
+  },
+  "accuracy": 0.7932739861523245,
+  "macro avg": {
+    "precision": 0.7996102671253488,
+    "recall": 0.7926115480308559,
+    "f1-score": 0.7876156745548819,
+    "support": 2022.0
+  },
+  "weighted avg": {
+    "precision": 0.8002529008156081,
+    "recall": 0.7932739861523245,
+    "f1-score": 0.788260566486274,
+    "support": 2022.0
+  }
+}

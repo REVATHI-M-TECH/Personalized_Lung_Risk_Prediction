@@ -1,0 +1,89 @@
+Execution Pipeline Log
+[2026-03-19 18:31:20.456] PIPELINE START
+[2026-03-19 18:31:20.457] START | load_data_generators
+[2026-03-19 18:31:20.458] Loading data generators for full 10K images
+[2026-03-19 18:31:20.858] END   | load_data_generators | 399.93 ms
+[2026-03-19 18:31:20.859] Number of classes: 5
+[2026-03-19 18:31:20.861] Total training samples: 6054
+[2026-03-19 18:31:20.862] START | load_training_arrays
+[2026-03-19 18:31:20.863] Loading training data in memory (streaming from generator)
+[2026-03-19 18:32:52.394] Successfully loaded 6054 images
+[2026-03-19 18:32:52.435] END   | load_training_arrays | 91570.18 ms
+[2026-03-19 18:32:54.317] Pool size (for active learning): 4843
+[2026-03-19 18:32:54.319] Evaluation size (for testing): 1211
+[2026-03-19 18:32:54.321] START | load_and_compile_model
+[2026-03-19 18:32:54.323] Loading pre-trained model
+[2026-03-19 18:32:57.210] Frozen base layers for fine-tuning
+[2026-03-19 18:32:57.218] END   | load_and_compile_model | 2894.37 ms
+[2026-03-19 18:32:57.221] ===== Starting Active Learning Phase =====
+[2026-03-19 18:32:57.223] AL Iteration 1/8 | pool=4843
+[2026-03-19 18:32:57.227] Computing uncertainty scores on pool
+[2026-03-19 18:34:11.677] Selected 50 uncertain samples for training
+[2026-03-19 18:34:48.744] AL Iteration 1 results | acc=0.8695 | f1=0.8660 | 111519.56 ms
+[2026-03-19 18:34:48.749] AL Iteration 2/8 | pool=4793
+[2026-03-19 18:34:48.750] Computing uncertainty scores on pool
+[2026-03-19 18:36:18.813] Selected 50 uncertain samples for training
+[2026-03-19 18:36:46.547] AL Iteration 2 results | acc=0.8720 | f1=0.8692 | 117798.01 ms
+[2026-03-19 18:36:46.548] AL Iteration 3/8 | pool=4743
+[2026-03-19 18:36:46.550] Computing uncertainty scores on pool
+[2026-03-19 18:38:00.021] Selected 50 uncertain samples for training
+[2026-03-19 18:38:25.482] AL Iteration 3 results | acc=0.8778 | f1=0.8755 | 98933.56 ms
+[2026-03-19 18:38:25.484] AL Iteration 4/8 | pool=4693
+[2026-03-19 18:38:25.485] Computing uncertainty scores on pool
+[2026-03-19 18:39:35.211] Selected 50 uncertain samples for training
+[2026-03-19 18:39:57.880] AL Iteration 4 results | acc=0.8737 | f1=0.8716 | 92396.06 ms
+[2026-03-19 18:39:57.882] AL Iteration 5/8 | pool=4643
+[2026-03-19 18:39:57.883] Computing uncertainty scores on pool
+[2026-03-19 18:41:08.248] Selected 50 uncertain samples for training
+[2026-03-19 18:41:31.451] AL Iteration 5 results | acc=0.8745 | f1=0.8725 | 93569.60 ms
+[2026-03-19 18:41:31.453] AL Iteration 6/8 | pool=4593
+[2026-03-19 18:41:31.454] Computing uncertainty scores on pool
+[2026-03-19 18:42:38.724] Selected 50 uncertain samples for training
+[2026-03-19 18:43:02.554] AL Iteration 6 results | acc=0.8728 | f1=0.8708 | 91101.97 ms
+[2026-03-19 18:43:02.555] AL Iteration 7/8 | pool=4543
+[2026-03-19 18:43:02.556] Computing uncertainty scores on pool
+[2026-03-19 18:44:07.937] Selected 50 uncertain samples for training
+[2026-03-19 18:44:29.926] AL Iteration 7 results | acc=0.8745 | f1=0.8728 | 87370.18 ms
+[2026-03-19 18:44:29.927] AL Iteration 8/8 | pool=4493
+[2026-03-19 18:44:29.929] Computing uncertainty scores on pool
+[2026-03-19 18:45:33.746] Selected 50 uncertain samples for training
+[2026-03-19 18:45:57.025] AL Iteration 8 results | acc=0.8761 | f1=0.8739 | 87097.81 ms
+[2026-03-19 18:45:57.027] START | save_active_learning_model
+[2026-03-19 18:45:58.213] Active Learning completed
+[2026-03-19 18:45:58.214] Total samples used for training: 400
+[2026-03-19 18:45:58.215] Remaining pool size: 4443
+[2026-03-19 18:45:58.216] Model saved: models/active_learning_subset_model.keras
+[2026-03-19 18:45:58.217] END   | save_active_learning_model | 1188.49 ms
+[2026-03-19 18:45:58.218] START | save_active_learning_metrics
+[2026-03-19 18:45:58.221] Generating active learning performance graphs
+[2026-03-19 18:45:59.824] Saved: results/active_learning_accuracy.png
+[2026-03-19 18:46:16.728] Saved: results/active_learning_confusion_matrix.png
+[2026-03-19 18:46:16.729] Active Learning Metrics
+[2026-03-19 18:46:16.729] Final Accuracy: 0.8761
+[2026-03-19 18:46:16.730] Final F1-Score: 0.8739
+[2026-03-19 18:46:16.730] Accuracy Range: 0.8695 - 0.8778
+[2026-03-19 18:46:16.730] END   | save_active_learning_metrics | 18509.39 ms
+[2026-03-19 18:46:16.731] START | continual_learning_phase
+[2026-03-19 18:46:16.732] Using 100 remaining samples for continual learning
+[2026-03-19 18:46:16.870] Training on 100 samples with learning rate 1e-06 (very conservative)
+[2026-03-19 18:47:08.733] After Continual Learning
+[2026-03-19 18:47:08.735] Accuracy: 0.8761
+[2026-03-19 18:47:08.737] Macro F1: 0.8739
+[2026-03-19 18:47:08.738] Improvement: +0.00%
+[2026-03-19 18:47:09.097] Saved: results/continual_learning_confusion_matrix.png
+[2026-03-19 18:47:09.352] Saved: models/continual_updated_model.h5
+[2026-03-19 18:47:09.353] END   | continual_learning_phase | 52621.32 ms
+[2026-03-19 18:47:09.354] START | save_sample_predictions
+[2026-03-19 18:47:09.355] Generating sample predictions visualization
+[2026-03-19 18:47:10.031] Saved: results/sample_predictions.png
+[2026-03-19 18:47:10.033] END   | save_sample_predictions | 677.81 ms
+[2026-03-19 18:47:10.035] ===== Pipeline Timing Summary (ms) =====
+[2026-03-19 18:47:10.036] load_data_generators: 399.93 ms
+[2026-03-19 18:47:10.037] load_training_arrays: 91570.18 ms
+[2026-03-19 18:47:10.037] load_and_compile_model: 2894.37 ms
+[2026-03-19 18:47:10.038] save_active_learning_model: 1188.49 ms
+[2026-03-19 18:47:10.039] save_active_learning_metrics: 18509.39 ms
+[2026-03-19 18:47:10.040] continual_learning_phase: 52621.32 ms
+[2026-03-19 18:47:10.041] save_sample_predictions: 677.81 ms
+[2026-03-19 18:47:10.043] TOTAL PIPELINE TIME: 949579.45 ms
+[2026-03-19 18:47:10.045] PIPELINE END

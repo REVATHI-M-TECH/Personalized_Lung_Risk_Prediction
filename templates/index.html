@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lung Disease Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <main class="container">
+    <section class="hero">
+      <p class="eyebrow">Personalized Lung Disease Prediction</p>
+      <h1>X-ray Upload + Symbolic Reasoning</h1>
+      <p class="subtitle">
+        Upload a chest X-ray image to get disease prediction, confidence, and transparent IF-THEN reasoning.
+      </p>
+      <div class="meta">
+        <span>Model: {{ model_path }}</span>
+        <span>Allowed: {{ allowed_extensions }}</span>
+        <span>Max size: {{ max_upload_mb }} MB</span>
+      </div>
+    </section>
+
+    <section class="panel upload-panel">
+      <form id="predictForm">
+        <label for="patientId" class="field-label">Patient ID</label>
+        <input type="text" id="patientId" name="patient_id" class="text-input" placeholder="e.g. P-1001" required>
+
+        <label for="fileInput" class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" name="file" accept="image/*" required>
+          <strong>Drop image here</strong>
+          <span>or click to choose a chest X-ray image</span>
+        </label>
+        <div class="actions">
+          <button type="submit" id="predictBtn">Predict Disease</button>
+          <button type="button" id="clearBtn" class="ghost">Clear</button>
+        </div>
+      </form>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="panel preview-panel">
+      <h2>Uploaded Image</h2>
+      <img id="previewImage" alt="Uploaded X-ray preview" />
+      <p id="previewHint">No image selected.</p>
+    </section>
+
+    <section class="panel results-panel" id="resultsPanel" hidden>
+      <h2>Prediction Result</h2>
+      <div class="cards">
+        <article class="card primary">
+          <h3>Primary Disease</h3>
+          <p id="primaryDisease" class="big"></p>
+          <p id="primaryConf"></p>
+        </article>
+        <article class="card secondary">
+          <h3>Secondary Differential</h3>
+          <p id="secondaryDisease" class="big"></p>
+          <p id="secondaryConf"></p>
+        </article>
+      </div>
+
+      <div class="bands">
+        <span id="bandBadge" class="badge"></span>
+        <p id="recommendation"></p>
+      </div>
+
+      <div class="rule-block">
+        <h3>Rules Fired</h3>
+        <ul id="rulesList"></ul>
+      </div>
+
+      <div class="rule-block">
+        <h3>IF-THEN Reasoning</h3>
+        <ol id="reasoningList"></ol>
+      </div>
+
+      <div class="rule-block">
+        <h3>Patient Trend</h3>
+        <p id="patientTrend"></p>
+      </div>
+
+      <div class="rule-block">
+        <h3>Recent History (Last 5)</h3>
+        <ul id="historyList"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
