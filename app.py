@@ -1,7 +1,9 @@
 import os
+import json
+from datetime import datetime
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request, send_from_directory
 from tensorflow.keras.models import load_model
 from werkzeug.utils import secure_filename
 
@@ -86,7 +88,7 @@ def health():
 def predict():
     patient_id = (request.form.get("patient_id") or "").strip()
     if not patient_id:
-        return jsonify({"error": "patient_id is required."}), 400
+        patient_id = store.get_next_patient_id()
 
     if "file" not in request.files:
         return jsonify({"error": "No file part found. Use form field name 'file'."}), 400
@@ -107,6 +109,8 @@ def predict():
         )
 
     safe_name = secure_filename(file.filename)
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S_%f")
+    safe_name = f"{patient_id}_{timestamp}_{safe_name}"
     upload_path = UPLOAD_DIR / safe_name
     file.save(upload_path)
 
@@ -120,15 +124,22 @@ def predict():
 
         record_id = store.add_prediction(
             patient_id=patient_id,
-            image_path=str(upload_path),
+            image_path=safe_name,
             predicted_disease=result["predicted_disease"],
             prediction_confidence=float(result["prediction_confidence"]),
+            secondary_disease=result["secondary_disease"],
+            secondary_confidence=float(result["secondary_confidence"]),
             confidence_band=result["symbolic_explanation"]["confidence_band"],
             recommendation=result["symbolic_explanation"]["recommendation"],
+            rules_fired=result["symbolic_explanation"]["rules_fired"],
+            if_then_reasoning=result["symbolic_explanation"]["if_then_reasoning"],
         )
 
         patient_summary = store.get_patient_summary(patient_id)
         patient_history = store.get_recent_predictions(patient_id, limit=5)
+        for row in patient_history:
+            if row.get("image_path"):
+                row["image_url"] = f"/uploads/{row['image_path']}"
 
         if patient_summary["trend"] == "confidence_drop":
             result["symbolic_explanation"]["if_then_reasoning"].append(
@@ -152,6 +163,8 @@ def predict():
                 "symbolic_explanation": result["symbolic_explanation"],
                 "patient_summary": patient_summary,
                 "patient_history": patient_history,
+                "report_json_url": f"/patient/{patient_id}/report.json",
+                "report_print_url": f"/patient/{patient_id}/report/print",
             }
         )
     except Exception as exc:
@@ -166,7 +179,73 @@ def patient_history(patient_id):
 
     summary = store.get_patient_summary(patient_id)
     history = store.get_recent_predictions(patient_id, limit=limit)
+    for row in history:
+        if row.get("image_path"):
+            row["image_url"] = f"/uploads/{row['image_path']}"
     return jsonify({"patient_summary": summary, "history": history})
+
+
+@app.route("/patient/new-id", methods=["GET"])
+def next_patient_id():
+    return jsonify({"patient_id": store.get_next_patient_id()})
+
+
+@app.route("/patients/search", methods=["GET"])
+def search_patients():
+    query = request.args.get("q", default="", type=str)
+    limit = request.args.get("limit", default=10, type=int)
+    if limit < 1 or limit > 100:
+        limit = 10
+    results = store.search_patients(query=query, limit=limit)
+    return jsonify({"results": results})
+
+
+@app.route("/prediction/<int:record_id>", methods=["GET"])
+def prediction_detail(record_id):
+    row = store.get_prediction_by_id(record_id)
+    if not row:
+        return jsonify({"error": "Record not found"}), 404
+
+    if row.get("image_path"):
+        row["image_url"] = f"/uploads/{row['image_path']}"
+    return jsonify(row)
+
+
+@app.route("/uploads/<path:filename>", methods=["GET"])
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_DIR, filename)
+
+
+@app.route("/patient/<patient_id>/report.json", methods=["GET"])
+def patient_report_json(patient_id):
+    summary = store.get_patient_summary(patient_id)
+    history = store.get_recent_predictions(patient_id, limit=100)
+    payload = {
+        "patient_summary": summary,
+        "history": history,
+        "generated_by": "lungdp-symbolic-ui",
+    }
+
+    json_body = json.dumps(payload, indent=2)
+    return Response(
+        json_body,
+        mimetype="application/json",
+        headers={
+            "Content-Disposition": f"attachment; filename={patient_id}_report.json"
+        },
+    )
+
+
+@app.route("/patient/<patient_id>/report/print", methods=["GET"])
+def patient_report_print(patient_id):
+    summary = store.get_patient_summary(patient_id)
+    history = store.get_recent_predictions(patient_id, limit=20)
+    return render_template(
+        "patient_report.html",
+        patient_id=patient_id,
+        summary=summary,
+        history=history,
+    )
 
 
 @app.errorhandler(413)

@@ -12,44 +12,118 @@
 
   <main class="container">
     <section class="hero">
-      <p class="eyebrow">Personalized Lung Disease Prediction</p>
-      <h1>X-ray Upload + Symbolic Reasoning</h1>
+      <h1>Personalized Lung Disease Prediction</h1>
       <p class="subtitle">
         Upload a chest X-ray image to get disease prediction, confidence, and transparent IF-THEN reasoning.
       </p>
       <div class="meta">
-        <span>Model: {{ model_path }}</span>
         <span>Allowed: {{ allowed_extensions }}</span>
         <span>Max size: {{ max_upload_mb }} MB</span>
       </div>
     </section>
 
-    <section class="panel upload-panel">
-      <form id="predictForm">
-        <label for="patientId" class="field-label">Patient ID</label>
-        <input type="text" id="patientId" name="patient_id" class="text-input" placeholder="e.g. P-1001" required>
+    <section class="panel stepper-panel">
+      <div class="stepper" id="stepper">
+        <div class="step is-active" id="stepUpload" onclick="setStep('upload'); showStage('upload')" style="cursor: pointer;">
+          <span class="dot">1</span>
+          <span>Upload</span>
+        </div>
+        <div class="line"></div>
+        <div class="step" id="stepLoading">
+          <span class="dot">2</span>
+          <span>Analyzing</span>
+        </div>
+        <div class="line"></div>
+        <div class="step" id="stepAnalysis" onclick="setStep('analysis'); showStage('analysis');" style="cursor: pointer;">
+          <span class="dot">3</span>
+          <span>Analysis</span>
+        </div>
+        <div class="line"></div>
+        <div class="step" id="stepHistory" onclick="setStep('history'); showStage('history');" style="cursor: pointer;">
+          <span class="dot">4</span>
+          <span>History</span>
+        </div>
+      </div>
+    </section>
 
-        <label for="fileInput" class="dropzone" id="dropzone">
-          <input type="file" id="fileInput" name="file" accept="image/*" required>
-          <strong>Drop image here</strong>
-          <span>or click to choose a chest X-ray image</span>
-        </label>
-        <div class="actions">
-          <button type="submit" id="predictBtn">Predict Disease</button>
-          <button type="button" id="clearBtn" class="ghost">Clear</button>
+    <section class="panel upload-stage" id="uploadStage">
+      <form id="predictForm" class="upload-grid">
+        <div class="upload-main">
+          <div class="patient-id-row">
+            <div>
+              <p class="field-label">Current Patient ID</p>
+              <p id="patientIdBadge" class="patient-id-badge">Loading...</p>
+            </div>
+            <div class="actions compact">
+              <button type="button" id="newPatientBtn" class="ghost">Generate New ID</button>
+            </div>
+          </div>
+
+          <input type="hidden" id="patientId" name="patient_id">
+
+          <label for="fileInput" class="dropzone" id="dropzone" style="margin-top: 15px;">
+            <input type="file" id="fileInput" name="file" accept="image/*" required>
+            <div class="drop-icon">+</div>
+            <strong>Drop X-ray image here</strong>
+            <span>or click to choose a chest X-ray image</span>
+          </label>
+
+          <div class="actions">
+            <button type="submit" id="predictBtn" hidden>Process X-ray</button>
+            <button type="button" id="clearBtn" class="ghost">Clear</button>
+          </div>
+        </div>
+
+        <div class="preview-mini">
+          <div style="margin-bottom: 30px;">
+            <h2>Preview</h2>
+            <img id="previewImage" alt="Uploaded X-ray preview" />
+            <p id="previewHint">No image selected.</p>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid var(--stroke); margin: 0 0 20px;">
+
+          <div class="patient-tools" style="margin-top: 0;">
+            <label for="patientSearch" class="field-label">Search Prediction History (by ID)</label>
+            <div class="search-row">
+              <input type="text" id="patientSearch" class="text-input" placeholder="Type patient ID, e.g. P-0003">
+              <button type="button" id="searchBtn" class="ghost">Search</button>
+            </div>
+            <ul id="searchResults" class="search-results"></ul>
+            
+            <div class="rule-block" id="quickRecordViewer" hidden style="margin-top: 15px; background: white;">
+              <div class="history-row-top" style="margin-bottom: 8px;">
+                <h3 style="margin:0; font-size: 1.1em;">Prediction Result</h3>
+                <button type="button" id="closeQuickRecord" class="mini-btn">Close</button>
+              </div>
+              <p id="quickRecordSummary" style="margin: 0 0 8px; font-size: 14px; color: var(--muted);"></p>
+              <h4 style="margin:0 0 4px; font-size:14px;">Rules Fired</h4>
+              <ul id="quickRecordRules" style="margin:0; padding-left: 20px; font-size:13px; color: var(--muted);"></ul>
+            </div>
+          </div>
         </div>
       </form>
       <div id="status" class="status"></div>
     </section>
 
-    <section class="panel preview-panel">
-      <h2>Uploaded Image</h2>
-      <img id="previewImage" alt="Uploaded X-ray preview" />
-      <p id="previewHint">No image selected.</p>
+    <section class="panel loading-stage" id="loadingStage" hidden>
+      <h2>Analyzing Patterns...</h2>
+      <p id="loadingHint">Processing uploaded X-ray using deep model + symbolic rules.</p>
+      <div class="progress-shell">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <p class="progress-text" id="progressText">0%</p>
     </section>
 
-    <section class="panel results-panel" id="resultsPanel" hidden>
-      <h2>Prediction Result</h2>
+    <section class="analysis-layout" id="analysisStage" hidden>
+      <aside class="panel pinned-preview">
+        <h2>Uploaded X-ray</h2>
+        <img id="analysisImage" alt="Analysis X-ray preview" />
+        <p id="analysisImageHint">Waiting for upload.</p>
+      </aside>
+
+      <section class="panel results-panel" id="resultsPanel">
+      <h2>Prediction + Reasoning</h2>
       <div class="cards">
         <article class="card primary">
           <h3>Primary Disease</h3>
@@ -87,7 +161,72 @@
         <h3>Recent History (Last 5)</h3>
         <ul id="historyList"></ul>
       </div>
+
+      <div class="rule-block" id="recordViewer" hidden>
+        <h3>Selected Record Report</h3>
+        <div class="record-viewer-layout">
+          <img id="recordImage" alt="Historical uploaded x-ray">
+          <div>
+            <p id="recordSummary"></p>
+            <ul id="recordRules"></ul>
+            <ol id="recordReasoning"></ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-block report-actions">
+        <h3>Export Patient Report</h3>
+        <div class="actions">
+          <a id="downloadJsonBtn" class="btn-link" href="#" target="_blank" rel="noopener">Download JSON Report</a>
+          <a id="openPrintBtn" class="btn-link ghost-link" href="#" target="_blank" rel="noopener">Open Print Report (Save as PDF)</a>
+        </div>
+      </div>
+      </section>
     </section>
+
+    <!-- STEP 4: HISTORY -->
+    <section class="panel history-stage" id="historyStage" hidden>
+      <h2>Patient History</h2>
+      <p class="subtitle" style="margin-left: 0; text-align: left; margin-bottom: 20px;">Review past uploads and predictive reasoning reports.</p>
+      
+      <div class="patient-id-row" style="margin-bottom: 20px;">
+        <div>
+          <p class="field-label">Search Patient ID for History</p>
+          <div class="search-row" style="max-width: 400px;">
+            <input type="text" id="historySearchInput" class="text-input" placeholder="e.g. P-0104">
+            <button type="button" id="historySearchBtn" class="ghost">Search History</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-block">
+        <h3>Patient Trend & Overview</h3>
+        <p id="historyPatientTrend" style="margin-top:0;">No patient loaded.</p>
+      </div>
+
+      <div class="rule-block">
+        <h3>Past Uploads</h3>
+        <ul id="historyFullList" class="search-results" style="max-height: none;"></ul>
+      </div>
+
+      <div class="rule-block" id="historyRecordViewer" hidden>
+        <div class="history-row-top" style="margin-bottom: 12px;">
+          <h3>Detailed Prediction Report</h3>
+          <button type="button" class="mini-btn" id="closeHistoryViewerBtn">Close</button>
+        </div>
+        <div class="record-viewer-layout">
+          <img id="historyRecordImage" alt="Historical uploaded x-ray">
+          <div>
+            <p id="historyRecordSummary" style="font-weight:600; margin-top:0;"></p>
+            <h4 style="margin: 12px 0 4px;">Rules Fired</h4>
+            <ul id="historyRecordRules" class="rules-list" style="margin-top:0;"></ul>
+            <h4 style="margin: 12px 0 4px;">IF-THEN Reasoning</h4>
+            <ol id="historyRecordReasoning" style="margin-top:0; padding-left:20px; font-size:14px;"></ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <script src="{{ url_for('static', filename='app.js') }}"></script>

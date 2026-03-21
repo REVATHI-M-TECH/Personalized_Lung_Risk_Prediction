@@ -54,33 +54,80 @@ body {
   gap: 16px;
 }
 
-.hero {
-  padding: 24px;
+.stepper-panel {
+  padding: 12px 16px;
 }
 
-.eyebrow {
-  margin: 0;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 12px;
-  color: var(--muted);
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6a7d7b;
+  font-weight: 600;
+}
+
+.step .dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #9bc6c1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #eff9f7;
+}
+
+.step.is-active {
+  color: #0b4f4a;
+}
+
+.step.is-active .dot {
+  background: #0f766e;
+  color: #fff;
+  border-color: #0f766e;
+}
+
+.step.is-done .dot {
+  background: #a7e8d1;
+  border-color: #56b68f;
+  color: #1f4a3f;
+}
+
+.line {
+  flex: 1;
+  height: 2px;
+  background: #d6e7e4;
+}
+
+.hero {
+  padding: 24px;
+  text-align: center;
 }
 
 h1 {
   margin: 8px 0 10px;
-  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
   line-height: 1.15;
 }
 
 .subtitle {
   margin: 0;
   max-width: 70ch;
+  margin-left: auto;
+  margin-right: auto;
   color: var(--muted);
 }
 
 .meta {
   margin-top: 14px;
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
 }
@@ -101,6 +148,80 @@ h1 {
   box-shadow: 0 10px 30px rgba(20, 50, 48, 0.08);
 }
 
+.upload-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.8fr) minmax(220px, 1fr);
+  gap: 16px;
+}
+
+.upload-main {
+  display: grid;
+}
+
+.patient-id-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.patient-id-badge {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  background: #e4f4f1;
+  border: 1px solid #abd6cf;
+  color: #0f5c56;
+  border-radius: 10px;
+  display: inline-block;
+  padding: 8px 12px;
+}
+
+.actions.compact {
+  margin-top: 0;
+}
+
+.patient-tools {
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 10px;
+  background: #fcfffe;
+  margin-bottom: 12px;
+}
+
+.search-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.search-row .text-input {
+  margin-bottom: 0;
+}
+
+.search-results {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.search-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  padding: 8px;
+  background: #f9fcfb;
+}
+
+.search-item button {
+  padding: 6px 10px;
+}
+
 .dropzone {
   border: 2px dashed #8ab9b4;
   border-radius: 14px;
@@ -110,6 +231,25 @@ h1 {
   text-align: center;
   cursor: pointer;
   background: #f6fffd;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dropzone:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(12, 78, 72, 0.12);
+}
+
+.drop-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  background: #d9f2ee;
+  color: #0f766e;
+  font-size: 32px;
+  line-height: 58px;
+  text-align: center;
+  font-weight: 700;
 }
 
 .field-label {
@@ -158,10 +298,43 @@ button.ghost {
   color: #294140;
 }
 
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+}
+
+.ghost-link {
+  background: #edf2f2;
+  color: #294140;
+}
+
+.report-actions .actions {
+  margin-top: 6px;
+}
+
 .status {
   margin-top: 10px;
   min-height: 20px;
   color: var(--muted);
+}
+
+.preview-mini {
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fbfdfd;
+}
+
+.preview-mini h2 {
+  margin: 0 0 8px;
+  font-size: 1rem;
 }
 
 .preview-panel img {
@@ -171,6 +344,57 @@ button.ghost {
   border-radius: 12px;
   border: 1px solid var(--stroke);
   background: #fafafa;
+}
+
+.preview-mini img,
+.pinned-preview img {
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: #fafafa;
+}
+
+.loading-stage {
+  text-align: center;
+  animation: fadeIn 0.35s ease;
+}
+
+.progress-shell {
+  width: min(640px, 92%);
+  margin: 14px auto 8px;
+  height: 14px;
+  border-radius: 999px;
+  background: #e8f2f1;
+  overflow: hidden;
+  border: 1px solid #d3e4e1;
+}
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #0f766e, #3caea3, #8dd3c7);
+  transition: width 0.25s ease;
+}
+
+.progress-text {
+  margin: 0;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.analysis-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(380px, 2fr);
+  gap: 16px;
+  animation: slideIn 0.35s ease;
+}
+
+.pinned-preview {
+  position: sticky;
+  top: 16px;
+  height: fit-content;
 }
 
 .cards {
@@ -226,6 +450,64 @@ button.ghost {
   padding-left: 20px;
 }
 
+#historyList {
+  list-style: none;
+  padding-left: 0;
+  display: grid;
+  gap: 8px;
+}
+
+#historyList li {
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  padding: 8px;
+  background: #f9fcfb;
+}
+
+.history-row-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.history-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mini-btn {
+  border: 1px solid #bad6d2;
+  background: #edf7f5;
+  color: #244240;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+#recordViewer {
+  border: 1px solid #cfe2df;
+  border-radius: 12px;
+  padding: 10px;
+  background: #fbfefe;
+}
+
+.record-viewer-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) 2fr;
+  gap: 12px;
+}
+
+#recordImage, #historyRecordImage {
+  width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  background: #fafafa;
+}
+
 #patientTrend {
   margin: 0;
   padding: 10px 12px;
@@ -234,8 +516,44 @@ button.ghost {
   background: #f9fdfc;
 }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 700px) {
   .actions {
     flex-direction: column;
+  }
+
+  .upload-grid,
+  .analysis-layout,
+  .record-viewer-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .stepper {
+    gap: 6px;
+  }
+
+  .step span:last-child {
+    font-size: 12px;
   }
 }
